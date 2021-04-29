@@ -1,0 +1,67 @@
+{
+  "employees": [
+    {
+      "_name": "Debdut",
+      "_profilePic": "./Assets/profile-images/Ellipse -3.png",
+      "_gender": "M",
+      "_department": [
+        "HR"
+      ],
+      "_salary": "400000",
+      "_startDate": "2020-05-16T18:30:00.000Z",
+      "_notes": "e",
+      "id": 4
+    },
+    {
+      "_name": "Debdut Chowdhury",
+      "_profilePic": "./Assets/profile-images/Ellipse -3.png",
+      "_gender": "M",
+      "_department": [
+        "HR",
+        "Marketing&Sales"
+      ],
+      "_salary": "422000",
+      "_startDate": "2020-03-31T18:30:00.000Z",
+      "_notes": "w",
+      "id": 5
+    },
+    {
+      "_name": "DEBDUT CHOWDHURY",
+      "_profilePic": "./Assets/profile-images/Ellipse -3.png",
+      "_gender": "M",
+      "_department": [
+        "Finance"
+      ],
+      "_salary": "427000",
+      "_startDate": "2021-04-19T18:30:00.000Z",
+      "_notes": "h",
+      "id": 7
+    },
+    {
+      "_name": "Ram",
+      "_profilePic": "./Assets/profile-images/Ellipse -2.png",
+      "_gender": "M",
+      "_department": [
+        "Marketing&Sales",
+        "Finance"
+      ],
+      "_salary": "400000",
+      "_startDate": "2021-04-17T18:30:00.000Z",
+      "_notes": "j",
+      "id": 9
+    },
+    {
+      "_name": "Riya",
+      "_profilePic": "./Assets/profile-images/Ellipse -7.png",
+      "_gender": "F",
+      "_department": [
+        "HR",
+        "Admin"
+      ],
+      "_salary": "500000",
+      "_startDate": "2021-04-19T18:30:00.000Z",
+      "_notes": "f",
+      "id": 10
+    }
+  ]
+}
