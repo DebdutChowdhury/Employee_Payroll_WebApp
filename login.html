@@ -1,0 +1,39 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Assets/fontawesome-free-5.15.3-web/css/all.css">
+    <title>Sign Up Page</title>
+    <link rel="stylesheet" href="./CSS File/login.css">
+</head>
+<body>
+    
+    <div class="form-content">
+       <form class="form" action="#">
+           <div class="form-head">Sign In Form</div>
+            <div class="row-content">
+                <div class="img-content" style="width: 50%;">
+                    <img class="img" src="./Assets/employee.jpeg" >
+                </div>
+                <div class="login-content">
+                    <div>
+                        <input class="input" type="text" id="phonenumber" name="phonenumber" placeholder="Phone" required="">
+                    </div>
+                    <div>
+                        <input class="input" type="password" id="password" name="password" placeholder="Password" required="">
+                        <span>
+                            <i class="fas fa-eye" aria-hidden="true" id="eye" onclick="toggle()"></i>
+                        </span>
+                    </div>
+                    <div style="display: flex;justify-content: center;">
+                        <button type="submit" class="button" id="login" onclick="validate()">Submit</button>
+                    </div>
+                </div>
+
+            </div>
+          
+        </form>
+        
+    </div>
+    <script src="./JS Scripts/login.js"></script>
+</body></html>

@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         newDate.push(document.querySelector("#year").value);
         try {
             dateCheck(newDate);
-            dateError.textContent = "";
+            dateError.textContent = ""; 
         } catch (exception) {
             dateError.textContent = exception;
         }
@@ -53,17 +53,17 @@ function dateCheck(startDate) {
     if (!(newDate <= new Date())) throw 'Start Date is incorrect';
 }
 
-const save = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+function save(){
+    // event.preventDefault();
+    // event.stopPropagation();
     try {
         setEmployeePayrollObject();
         if (site_properties.from_local) {
             createAndUpdateStorage();
-            resetForm();
+            // resetForm();
             window.location.replace(site_properties.home_page);
         } else {
-            createAndUpdateJSONFile();
+            createServer();
         }
     } catch (exception) {
         console.error(exception);
@@ -71,28 +71,34 @@ const save = (event) => {
     }
 }
 
+let newData = {}
 function setEmployeePayrollObject() {
+    
     try {
+        // console.log('in try');
         const output = document.querySelector('.salary-output');
 
-        employeePayrollObj._name = document.getElementById('name').value;
+        newData._name = document.getElementById('name').value;
         //employeePayrollObj.id=createNewEmployeeId();
-        employeePayrollObj._profilePic = getRadioValue(document.getElementsByName('profile'));
-        employeePayrollObj._gender = getRadioValue(document.getElementsByName('gender'));
-        employeePayrollObj._department = getCheckBoxValue(document.getElementsByClassName('checkbox'));
-        employeePayrollObj._salary = output.textContent;
+        newData._profilePic = getRadioValue(document.getElementsByName('profile'));
+        newData._gender = getRadioValue(document.getElementsByName('gender'));
+        newData._department = getCheckBoxValue(document.getElementsByClassName('checkbox'));
+        
+        console.log(typeof(newData._department));
+        newData._salary = output.textContent;
 
         let start = new Array();
         start.push(document.getElementById('day').value);
         start.push(document.getElementById('month').value);
         start.push(document.getElementById('year').value);
-        employeePayrollObj._startDate = new Date(start[2], (start[1] - 1), start[0]);
-
-        employeePayrollObj._notes = document.getElementById('notes').value;
-        console.log(employeePayrollObj);
+        newData._startDate = new Date(start[2], (start[1] - 1), start[0]);
+        console.log(new Date(start[2], (start[1] - 1), start[0]));
+        newData._notes = document.getElementById('notes').value;
+        console.log(newData );
     }
     catch (exception) {
         console.error(exception);
+        // window.location.replace(site_properties.h
     }
 }
 
@@ -135,7 +141,7 @@ const createEmpData = (id) => {
     return employeePayrollObj;
 }
 function setEmployeePayrollData(employeePayrollData) {
-
+    
     employeePayrollData.name = employeePayrollObj._name;
     employeePayrollData.profilePic = employeePayrollObj._profilePic;
     employeePayrollData.gender = employeePayrollObj._gender;
@@ -173,18 +179,24 @@ function checkForUpdate() {
     if (!isUpdate) return;
     employeePayrollObj = JSON.parse(employeePayrollJson);
     console.log(employeePayrollObj);
-    setForm();
+    setForm(employeePayrollObj);
 }
-const setForm = () => {
-    console.log(employeePayrollObj);
-    setValue('#name', employeePayrollObj._name);
-    setSelectedValues('[name=profile]', employeePayrollObj._profilePic);
-    setSelectedValues('[name=gender]', employeePayrollObj._gender);
-    setCheckBox(document.getElementsByClassName('checkbox'), employeePayrollObj._department);
-    setValue('#salary', employeePayrollObj._salary);
-    setTextValue('.salary-output', employeePayrollObj._salary);
-    setValue('#notes', employeePayrollObj._notes);
-    let date = employeePayrollObj._startDate.toString().slice(0, 10).split("-");
+let dataEmp;
+const setForm = (employeePayrollObj) => {
+    
+    console.log(JSON.parse(employeePayrollObj),"\n",typeof(JSON.parse(employeePayrollObj)));
+    dataEmp = JSON.parse(employeePayrollObj)
+    let b = Object.values(dataEmp)
+    console.log(dataEmp.data._name)
+    // console.log(employeePayrollObj._name);
+    setValue('#name', dataEmp.data._name);
+    setSelectedValues('[name=profile]', dataEmp.data._profilePic);
+    setSelectedValues('[name=gender]', dataEmp.data._gender);
+    setCheckBox(document.getElementsByClassName('checkbox'), dataEmp.data._department);
+    setValue('#salary', dataEmp.data._salary);
+    setTextValue('.salary-output', dataEmp.data._salary);
+    setValue('#notes', dataEmp.data._notes);
+    let date = dataEmp.data._startDate.toString().slice(0, 10).split("-");
     setValue('#day', date[2])
     setValue('#month', date[1])
     setValue('#year', date[0]);
@@ -217,19 +229,64 @@ const setTextValue = (id, value) => {
     element.textContent = value;
 }
 
-function createAndUpdateJSONFile() {
-    let methodURL = site_properties.json_host_server;
+// function createAndUpdateJSONFile() {
+//     let methodURL = site_properties.json_host_server;
+//     let methodCall = "POST";
+//     if (isUpdate) {
+//         methodCall = "PUT";
+//         methodURL = methodURL + employeePayrollObj.id;
+//     }
+//     makePromiseCall(methodCall, methodURL, true, employeePayrollObj)
+//         .then(responseText => {
+//             console.log(employeePayrollObj);
+//         }).catch(error => {
+//             console.log(methodCall + " Error Staus: " + JSON.stringify(error));
+//             resetForm();
+//             window.location.replace(site_properties.home_page);
+//         });
+// }
+function createServer() {
+    
+    let methodURL = site_properties.json_host_server+"/register";
     let methodCall = "POST";
     if (isUpdate) {
-        methodCall = "PUT";
-        methodURL = methodURL + employeePayrollObj.id;
+        updateServer();
+        // methodCall = "PUT";
+        // methodURL = methodURL +"/register/"+dataEmp.data._id;
     }
-    makePromiseCall(methodCall, methodURL, true, employeePayrollObj)
+    console.log(methodURL);
+    console.log(methodCall);
+    // console.log(typeof(employeePayrollObj));
+    makePromiseCall(methodCall, methodURL, true, newData)
         .then(responseText => {
-            console.log(employeePayrollObj);
+            console.log("in promisecall");
+            console.log(responseText);
+            window.location.replace(site_properties.home_page);
         }).catch(error => {
             console.log(methodCall + " Error Staus: " + JSON.stringify(error));
-            resetForm();
+            // resetForm();
+            // window.location.replace(site_properties.home_page);
+        });
+    
+}
+
+function updateServer() {
+    
+    let methodURL = site_properties.json_host_server +"/register/"+dataEmp.data._id;
+    let methodCall = "PUT";
+    
+    console.log(methodURL);
+    console.log(methodCall);
+    // console.log(typeof(employeePayrollObj));
+    makePromiseCall(methodCall, methodURL, true, newData)
+        .then(responseText => {
+            console.log("in promisecall");
+            console.log(responseText);
             window.location.replace(site_properties.home_page);
+        }).catch(error => {
+            console.log(methodCall + " Error Staus: " + JSON.stringify(error));
+            // resetForm();
+            // window.location.replace(site_properties.home_page);
         });
 }
+

@@ -21,7 +21,7 @@
         </div>
     </header>
     <div class="form-content">
-        <form id="EmpForm" class="form" action="#" onsubmit="save(event);return false">
+        <form id="EmpForm" class="form" action="#" >
             <div class="form-head">Employee Payroll App</div>
             <div class="row-content">
                 <label class="label text" for="name">Employee Name: </label>
@@ -102,6 +102,7 @@
                 <div class="row-content">
                     <label class="label text" for="startDate">Start Date: </label>
                     <div id="startDate">
+                        <!-- <input type="date" id="startDate"> -->
                         <select id="day" name="Day">
                             <option value="01">01</option>
                             <option value="02">02</option>
@@ -155,7 +156,7 @@
                             <option value="2019">2019</option>
                             <option value="2018">2018</option>
                             <option value="2017">2017</option>
-                        </select>
+                        </select> 
                     </div>
                 </div>
             </div>
@@ -170,7 +171,7 @@
             <div class="buttonParent">
                 <a href="./Home Page.html" class="resetButton button cancelButton">Cancel</a>
                 <div class="submit-reset">
-                    <button type="submit" class="button submitButton" id="submitButton">Submit</button>
+                    <button type="submit" class="button submitButton" id="submitButton" onclick ="save(); console.log('hello'); return false">Submit</button>
                     <button type="reset" class="resetButton button" id="resetButton"
                         onclick="resetForm();">Reset</button>
                 </div>

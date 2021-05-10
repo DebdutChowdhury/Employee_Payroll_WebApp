@@ -1,41 +1,60 @@
 let empPayrollList = new Array();
 
-// requirejs(['./site-properties.js'], function(add){
-//     console.log(add.add());
-// })
 window.addEventListener("DOMContentLoaded", (event) => {
     
     if (site_properties.from_local) getEmpDataFromLocalStorage();
-    else getEmpDataFromJSONServer();
+    // else getEmpDataFromJSONServer();
+    else getEmpDataServer();
 });
-
 
 function getEmpDataFromLocalStorage() {
     empPayrollList = localStorage.getItem("EmployeePayrollList") ?
         JSON.parse(localStorage.getItem("EmployeePayrollList")) : [];
-
+        console.log(empPayrollList)
     processLocalStorageResponse()
 };
 
-function getEmpDataFromJSONServer() {
-    let getURL = site_properties.json_host_server;
-    makePromiseCall("GET", getURL, true)
-        .then(responseText => {
-            empPayrollList = (JSON.parse(responseText));
-            console.log(empPayrollList);
-            processLocalStorageResponse()
-        }).catch(error => {
-            console.log("GET Error Staus: " + JSON.stringify(error));
-        });
+// function getEmpDataFromJSONServer() {
+//     let getURL = site_properties.json_host_server;
+//     console.log(getURL)
+//     makePromiseCall("GET", getURL, true)
+//         .then(responseText => {
+//             empPayrollList = (JSON.parse(responseText));
+//             console.log(empPayrollList);
+//             processLocalStorageResponse()
+//         }).catch(error => {
+//             console.log("GET Error Staus: " + JSON.stringify(error));
+//         });
+// }
+
+function getEmpDataServer(){
+    let getURL = site_properties.json_host_server+"/";
+    console.log(getURL);
+    makePromiseCall("GET",getURL, true).then(responseText => {
+        empPayrollList = responseText;
+        processLocalStorageResponse(empPayrollList)
+    })
+    .catch(error => {
+        // if(error !== undefined)
+            console.log("GET Error Staus: " + error);
+    });
 }
 
-function processLocalStorageResponse() {
-    document.querySelector(".emp-count").textContent = empPayrollList.length;
-    createInnerHTML();
+function processLocalStorageResponse(data) {
+    console.log("Inside processlocal",JSON.parse(data));
+    const empdata= JSON.parse(data);
+
+    document.querySelector(".emp-count").textContent = empdata.data.length;
+    // if(data){
+        createInnerHTML(empdata.data);
+    // }
+   
     localStorage.removeItem("editEmp");
 }
 
-function createInnerHTML() {
+function createInnerHTML(data) {
+    console.log(data);
+
     const headerHTML =
         "<th></th>" +
         "<th>Emp Name</th>" +
@@ -45,24 +64,24 @@ function createInnerHTML() {
         "<th>Start Date</th>" +
         "<th>Actions</th>";
 
-    if (empPayrollList.length == 0) {
-        console.log(empPayrollList);
+    if (data.length == 0) {
+        console.log(data);
         console.log("No data found");
         return;
     }
     let innerHTML = `${headerHTML}`;
-    for (const empData of empPayrollList) {
+    for (const empData of data) {
         innerHTML = `${innerHTML}
         <tr>
             <td><img class="profile" src="${empData._profilePic}" alt="Profile Pic"></td>
             <td>${empData._name}</td>
             <td>${empData._gender}</td>
-            <td>${getDeptHTML(empData._department)}</td>
+             <td>${getDeptHTML(empData._department)}</td>
             <td>RS ${empData._salary}</td>
             <td>${stringifyDate(empData._startDate)}</td>
             <td>
-                <img id="${empData.id}" onclick="remove(this)" alt="delete" src="./Assets/icons/delete-black-18dp.svg">
-                <img id="${empData.id}" onclick="update(this)" alt="edit" src="./Assets/icons/create-black-18dp.svg">
+                <img id="${empData._id}" onclick="remove(this)" alt="delete" src="../Assets/icons/delete-black-18dp.svg">
+                <img id="${empData._id}" onclick="update(this)" alt="edit" src="../Assets/icons/create-black-18dp.svg">
             </td>
         </tr>
         `;
@@ -71,46 +90,60 @@ function createInnerHTML() {
 }
 
 function getDeptHTML(deptList) {
+    console.log(typeof(deptList))
+    console.log(deptList)
     let deptHTML = '';
-    for (const dept of deptList) {
-        deptHTML = `${deptHTML}<div class="dept-label">${dept}</div>`
-    }
+    let department = JSON.stringify(deptList);
+    // console.log(typeof(department))
+    // for (const dept of department) {
+        deptHTML = `${deptHTML}<div class="dept-label">${deptList}</div>`
+    // }
     return deptHTML;
 }
 
 function remove(node) {
-    let empPayrollData = empPayrollList.find(empData => empData.id == node.id);
-    if (!empPayrollData) {
-        console.log("No entry found!!");
-        return;
-    }
-    const index = empPayrollList.map(empData => empData.id)
-        .indexOf(empPayrollData.id);
-    empPayrollList.splice(index, 1);
+    // let empPayrollData = empPayrollList.find(empData => empData.id == node.id);
+
+    // if (!empPayrollData) {
+    //     console.log("No entry found!!");
+    //     return; 
+    // }
+    // const index = empPayrollList.map(empData => empData.id)
+    //     .indexOf(empPayrollData.id);
+    // empPayrollList.splice(index, 1);
 
     if (site_properties.from_local) {
         localStorage.setItem("EmployeePayrollList", JSON.stringify(empPayrollList));
         document.querySelector(".emp-count").textContent = empPayrollList.length;
         createInnerHTML();
     } else {
-        let delURL = site_properties.json_host_server + empPayrollData.id;
+        let delURL = site_properties.json_host_server +"/delete/"+ node.id;
+        console.log(delURL)
         makePromiseCall("DELETE", delURL, false)
             .then(responseText => {
-                console.log("Del: " + employeePayrollObj._name);
-                document.querySelector(".emp-count").textContent = empPayrollList.length;
+                console.log("Del: " + node);
+                document.querySelector(".emp-count").textContent = node.length;
                 createInnerHTML();
             }).catch(error => {
-                console.log("DEL Error Staus: " + JSON.stringify(error));
+                console.log("DEL Error Status: " + JSON.stringify(error));
             });
     }
 }
 
 function update(node) {
-    let empPayrollData = empPayrollList.find(empData => empData.id == node.id);
-    if (!empPayrollData) {
-        console.log("No entry found!!");
-        return;
-    }
-    localStorage.setItem('editEmp', JSON.stringify(empPayrollData, '\t', 2));
+    console.log("NOde in update",node.id)
+    let emp;
+    
+    let getURL = site_properties.json_host_server+"/register/"+node.id;
+    console.log(getURL);
+    makePromiseCall("GET",getURL, true).then(responseText => {
+       empPayrollList = responseText;
+       console.log("Data is here",empPayrollList)
+       emp=empPayrollList
+       localStorage.setItem('editEmp', JSON.stringify(responseText, '\t', 2));
+    })
+    .catch(error => {
+       console.log("GET Error Staus: " + error);
+    });
     window.location.replace(site_properties.add_emp_payroll_page);
 }
